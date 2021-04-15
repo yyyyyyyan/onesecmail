@@ -3,6 +3,8 @@ from uuid import uuid4
 
 import requests
 
+from onesecmail.utils import get_default_headers
+
 
 class OneSecMail:
     API_URL = "https://www.1secmail.com/api/v1/"
@@ -17,7 +19,9 @@ class OneSecMail:
     def __init__(self, user, domain, **requests_kwargs):
         self.user = user
         self.domain = domain
-        self.requests_kwargs = requests_kwargs
+        headers = get_default_headers()
+        headers.update(requests_kwargs.pop("headers", {}))
+        self.requests_kwargs = {"headers": headers, **requests_kwargs}
 
     def __repr__(self):
         return f"<OneSecMail [{self.address}]>"
