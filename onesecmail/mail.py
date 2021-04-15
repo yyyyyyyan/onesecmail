@@ -19,6 +19,9 @@ class OneSecMail:
         self.domain = domain
         self.requests_kwargs = requests_kwargs
 
+    def __repr__(self):
+        return f"<OneSecMail [{self.address}]>"
+
     @property
     def domain(self):
         return self._domain
@@ -28,6 +31,10 @@ class OneSecMail:
         if value not in self.DOMAINS:
             raise ValueError(f"{value} is not an allowed domain")
         self._domain = value
+
+    @property
+    def address(self):
+        return f"{self.user}@{self.domain}"
 
     @classmethod
     def get_random_mailbox(cls, **requests_kwargs):
