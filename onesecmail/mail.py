@@ -1,8 +1,10 @@
+from json import JSONDecodeError
 from random import choice as random_choice
 from uuid import uuid4
 
 import requests
 
+from onesecmail.message import EmailMessage
 from onesecmail.utils import get_default_headers
 
 
@@ -15,6 +17,7 @@ class OneSecMail:
         "esiix.com",
         "wwjmp.com",
     ]
+    DATE_OFFSET = "+0200"
 
     def __init__(self, user, domain, **requests_kwargs):
         self.user = user
@@ -72,3 +75,15 @@ class OneSecMail:
         )
         response.raise_for_status()
         return response
+
+    def get_message_as_dict(self, message_id):
+        response = self.request("readMessage", id=message_id)
+        try:
+            message_data = response.json()
+        except JSONDecodeError:
+            raise ValueError(f"Error reading message #{message_id}: {response.text}")
+        return message_data
+
+    def get_message(self, message_id):
+        message_data = self.get_message_as_dict(message_id)
+        return EmailMessage.from_dict(message_data, date_offset=self.DATE_OFFSET)
