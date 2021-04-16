@@ -58,3 +58,17 @@ class OneSecMail:
         user = uuid4().hex
         domain = random_choice(cls.DOMAINS)
         return cls(user, domain, **requests_kwargs)
+
+    def request(self, action, **params):
+        response = requests.get(
+            self.API_URL,
+            params={
+                "action": action,
+                "login": self.user,
+                "domain": self.domain,
+                **params,
+            },
+            **self.requests_kwargs,
+        )
+        response.raise_for_status()
+        return response
