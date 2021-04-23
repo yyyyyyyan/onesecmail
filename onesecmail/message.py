@@ -56,3 +56,10 @@ class EmailMessage:
             "html_body": data.get("htmlBody"),
         }
         return cls(**message_data, **kwargs)
+
+    def fetch_content(self, message_data):
+        self.subject = message_data.get("subject", self.subject)
+        self.body = message_data.get("body", self.body)
+        self.text_body = message_data.get("textBody", self.text_body)
+        self.html_body = message_data.get("htmlBody", self.html_body)
+        self.attachments = message_data.get("attachments", self.attachments)
