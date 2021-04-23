@@ -26,6 +26,10 @@ class EmailMessage:
         self.html_body = html_body
         self.attachments = attachments or []
 
+    def __repr__(self):
+        subject = self.subject[:27] + "..." if len(self.subject) > 27 else self.subject
+        return f"<EmailMessage; from='{self.from_address}', subject='{subject}', date='{self.date}'>"
+
     @property
     def id(self):
         return self._id
