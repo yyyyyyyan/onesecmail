@@ -6,6 +6,7 @@ class EmailMessage:
         self,
         message_id,
         from_address,
+        to_address,
         date,
         subject="",
         body="",
@@ -16,6 +17,7 @@ class EmailMessage:
     ):
         self._id = message_id
         self._from_address = from_address
+        self._to_address = to_address
         date += date_offset
         self._date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S%z")
         self.subject = subject
@@ -33,6 +35,10 @@ class EmailMessage:
         return self._from_address
 
     @property
+    def to_address(self):
+        return self._to_address
+
+    @property
     def date(self):
         return self._date
 
@@ -41,6 +47,7 @@ class EmailMessage:
         message_data = {
             "message_id": data["id"],
             "from_address": data["from"],
+            "to_address": data["to"],
             "subject": data["subject"],
             "date": data["date"],
             "attachments": data.get("attachments"),

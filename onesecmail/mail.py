@@ -83,6 +83,7 @@ class OneSecMail:
             message_data = response.json()
         except JSONDecodeError:
             raise ValueError(f"Error reading message #{message_id}: {response.text}")
+        message_data["to"] = self.address
         return message_data
 
     def get_message(self, message_id):
