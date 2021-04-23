@@ -43,9 +43,9 @@ class EmailMessage:
             "from_address": data["from"],
             "subject": data["subject"],
             "date": data["date"],
-            "attachments": data["attachments"],
-            "body": data["body"],
-            "text_body": data["textBody"],
-            "html_body": data["htmlBody"],
+            "attachments": data.get("attachments"),
+            "body": data.get("body"),
+            "text_body": data.get("textBody"),
+            "html_body": data.get("htmlBody"),
         }
         return cls(**message_data, **kwargs)
