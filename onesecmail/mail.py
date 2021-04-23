@@ -25,6 +25,7 @@ class OneSecMail:
         headers = get_default_headers()
         headers.update(requests_kwargs.pop("headers", {}))
         self.requests_kwargs = {"headers": headers, **requests_kwargs}
+        self.mailbox = []
 
     def __repr__(self):
         return f"<OneSecMail [{self.address}]>"
@@ -87,3 +88,21 @@ class OneSecMail:
     def get_message(self, message_id):
         message_data = self.get_message_as_dict(message_id)
         return EmailMessage.from_dict(message_data, date_offset=self.DATE_OFFSET)
+
+    def get_messages(self, validators=()):
+        response = self.request("getMessages")
+        try:
+            message_list = response.json()
+        except JSONDecodeError:
+            raise ValueError(f"Error getting messages: {response.text}")
+
+        messages = []
+        for message_data in message_list:
+            valid = True
+            for validator in validators:
+                if not validator(message_data):
+                    valid = False
+                    break
+            if valid:
+                messages.append(self.get_message(message_data["id"]))
+        return messages
