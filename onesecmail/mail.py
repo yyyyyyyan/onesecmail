@@ -99,11 +99,14 @@ class OneSecMail:
 
         messages = []
         for message_data in message_list:
+            message_data["to"] = self.address
+            message = EmailMessage.from_dict(message_data, date_offset=self.DATE_OFFSET)
             valid = True
             for validator in validators:
-                if not validator(message_data):
+                if not validator(message):
                     valid = False
                     break
             if valid:
-                messages.append(self.get_message(message_data["id"]))
+                message.fetch_content(self.get_message_as_dict(message.id))
+                messages.append(message)
         return messages
