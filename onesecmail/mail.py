@@ -17,7 +17,6 @@ class OneSecMail:
         "esiix.com",
         "wwjmp.com",
     ]
-    DATE_OFFSET = "+0200"
 
     def __init__(self, user, domain, **requests_kwargs):
         self.user = user
@@ -25,7 +24,6 @@ class OneSecMail:
         headers = get_default_headers()
         headers.update(requests_kwargs.pop("headers", {}))
         self.requests_kwargs = {"headers": headers, **requests_kwargs}
-        self.mailbox = []
 
     def __repr__(self):
         return f"<OneSecMail [{self.address}]>"
@@ -88,9 +86,9 @@ class OneSecMail:
 
     def get_message(self, message_id):
         message_data = self.get_message_as_dict(message_id)
-        return EmailMessage.from_dict(message_data, date_offset=self.DATE_OFFSET)
+        return EmailMessage.from_dict(message_data, mail_handler=self)
 
-    def get_messages(self, validators=()):
+    def search_messages(self, validators=()):
         response = self.request("getMessages")
         try:
             message_list = response.json()
@@ -100,13 +98,13 @@ class OneSecMail:
         messages = []
         for message_data in message_list:
             message_data["to"] = self.address
-            message = EmailMessage.from_dict(message_data, date_offset=self.DATE_OFFSET)
+            message = EmailMessage.from_dict(message_data, mail_handler=self)
             valid = True
             for validator in validators:
                 if not validator(message):
                     valid = False
                     break
             if valid:
-                message.fetch_content(self.get_message_as_dict(message.id))
+                message.fetch_content()
                 messages.append(message)
         return messages
