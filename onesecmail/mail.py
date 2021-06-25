@@ -108,3 +108,21 @@ class OneSecMail:
                 message.fetch_content()
                 messages.append(message)
         return messages
+
+    def get_attachment_content(self, message_id, filename):
+        """Gets the content of an attachment.
+
+        Parameters
+        ----------
+        message_id : int
+            The ID of the message from which the attachment will be fetched.
+        filename : str
+            The filename of the attachment.
+
+        Returns
+        -------
+        bytes
+            The content of the attachment.
+        """
+        response = self.request("download", id=message_id, file=filename)
+        return response.content
