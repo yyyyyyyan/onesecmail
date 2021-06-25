@@ -77,3 +77,30 @@ class EmailMessage:
             self.text_body = message_data.get("textBody", self.text_body)
             self.html_body = message_data.get("htmlBody", self.html_body)
             self.attachments = message_data.get("attachments", self.attachments)
+
+    def get_attachment_content(self, filename):
+        """Gets the content of an attachment.
+
+        Parameters
+        ----------
+        filename : str
+            The filename of the attachment.
+
+        Returns
+        -------
+        bytes
+            The content of the attachment.
+        """
+        return self._mail_handler.get_attachment_content(self.id, filename)
+
+    def download_attachment(self, filename, save_path):
+        """Downloads an attachment to a local file.
+
+        Parameters
+        ----------
+        filename : str
+            The filename of the attachment.
+        save_path : path-like object
+            The file path in which the attachment will be saved.
+        """
+        return self._mail_handler.download_attachment(self.id, filename, save_path)
