@@ -126,3 +126,20 @@ class OneSecMail:
         """
         response = self.request("download", id=message_id, file=filename)
         return response.content
+
+    def download_attachment(self, message_id, filename, save_path):
+        """Downloads an attachment to a local file.
+
+        Parameters
+        ----------
+        message_id : int
+            The ID of the message from which the attachment will be fetched.
+        filename : str
+            The filename of the attachment.
+        save_path : path-like object
+            The file path in which the attachment will be saved.
+        """
+        attachment_content = self.get_attachment_content(message_id, filename)
+        with open(save_path, "wb") as attachment_file:
+            size = attachment_file.write(attachment_content)
+        return save_path, size
