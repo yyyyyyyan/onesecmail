@@ -1,3 +1,4 @@
+"""Contains utility functions for 1secmail's API requests."""
 from requests.structures import CaseInsensitiveDict
 
 from onesecmail import __title__
@@ -5,16 +6,25 @@ from onesecmail import __version__
 
 
 def get_default_user_agent():
-    """Return a string representing the default user agent.
+    """Gets the default user agent.
 
-    :rtype: str
+    Generates the default user agent to be used in
+    the API requests.
+
+    Returns
+    -------
+    str
+        The user agent formed by the package's title and version.
     """
     return f"{__title__}/{__version__}"
 
 
 def get_default_headers():
-    """Return a dictionary representing the default request headers.
+    """Gets the default request headers.
 
-    :rtype: requests.structures.CaseInsensitiveDict
+    Returns
+    -------
+    requests.structures.CaseInsensitiveDict
+        The request headers containing the default user agent.
     """
     return CaseInsensitiveDict({"User-Agent": get_default_user_agent()})
