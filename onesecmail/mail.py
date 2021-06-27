@@ -223,7 +223,7 @@ class OneSecMail:
         message_data = self.get_message_as_dict(message_id)
         return EmailMessage.from_dict(message_data, mail_handler=self)
 
-    def search_messages(self, validators=()):
+    def get_messages(self, validators=()):
         """Gets multiple email messages given validators.
 
         Gets all available email messages and returns those that
