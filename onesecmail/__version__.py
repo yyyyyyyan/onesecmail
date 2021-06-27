@@ -6,7 +6,7 @@
 #
 
 __title__ = "onesecmail"
-__description__ = "The pythonic temporary mailbox!"
+__description__ = "The unofficial Python client for the 1secmail API."
 __url__ = "https://github.com/yyyyyyyan/onesecmail"
 __version__ = "0.0.1"
 __author__ = "yyyyyyyan"
