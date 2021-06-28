@@ -18,33 +18,32 @@ class OneSecMail:
         The mailbox username. This is everything that comes
         before the "@" in the email address.
     domain : str
-        The mailbox domain. Restricted to those listed in OneSecMail.DOMAINS.
+        The mailbox domain. Restricted to those listed in `available_domains`.
+    available_domains : list, optional
+        An initial list of available domains the domain setter will check.
+        If not passed, the constructor will use the result of `OneSecMail.get_available_domains()`.
     **requests_kwargs : dict, optional
             Additional kwargs to be passed to the request.get call in the
             request method.
 
     Attributes
     ----------
+    available_domains : list
     address : str
     user : str
     domain : str
     request_kwargs : dict
     API_URL : str
         The URL of the 1secmail API.
-    DOMAINS : list
-        The list of available domains for a 1secmail mailbox.
+
     """
 
     API_URL = "https://www.1secmail.com/api/v1/"
-    DOMAINS = [
-        "1secmail.com",
-        "1secmail.net",
-        "1secmail.org",
-        "esiix.com",
-        "wwjmp.com",
-    ]
 
-    def __init__(self, user, domain, **requests_kwargs):
+    def __init__(self, user, domain, *, available_domains=None, **requests_kwargs):
+        self._available_domains = (
+            available_domains or OneSecMail.get_available_domains()
+        )
         self.user = user
         self.domain = domain
         headers = get_default_headers()
@@ -67,7 +66,7 @@ class OneSecMail:
 
     @domain.setter
     def domain(self, value):
-        if value not in self.DOMAINS:
+        if value not in self.available_domains:
             raise ValueError(f"{value} is not an allowed domain")
         self._domain = value
 
@@ -75,6 +74,11 @@ class OneSecMail:
     def address(self):
         """The mailbox email address."""
         return f"{self.user}@{self.domain}"
+
+    @property
+    def available_domains(self):
+        """The list of available domains for a 1secmail mailbox."""
+        return self._available_domains
 
     @classmethod
     def from_address(cls, address, **requests_kwargs):
@@ -128,13 +132,34 @@ class OneSecMail:
 
         Notes
         -----
-        The domain is randomly chosen from OneSecMail.DOMAINS.
-        The user is generated using the uuid.uuid4() function,
+        The domain is randomly chosen from `OneSecMail.get_available_domains()`.
+        The user is generated using the `uuid.uuid4()` function,
         which means it will always be 32 characters long.
         """
         user = uuid4().hex
-        domain = random_choice(cls.DOMAINS)
-        return cls(user, domain, **requests_kwargs)
+        available_domains = cls.get_available_domains()
+        domain = random_choice(available_domains)
+        return cls(user, domain, available_domains=available_domains, **requests_kwargs)
+
+    @staticmethod
+    def get_available_domains(**kwargs):
+        """Gets a list of active domains for a 1secmail mailbox address.
+
+        Parameters
+        ----------
+        **kwargs : dict, optional
+            Extra kwargs will be passed into the `requests.get()` method call.
+
+        Returns
+        -------
+        list
+            The list of available domains.
+        """
+        response = requests.get(
+            OneSecMail.API_URL, params={"action": "getDomainList"}, **kwargs
+        )
+        response.raise_for_status()
+        return response.json()
 
     def request(self, action, **params):
         """Makes request to 1secmail API's given action.
